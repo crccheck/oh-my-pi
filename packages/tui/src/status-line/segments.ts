@@ -211,7 +211,18 @@ const modelSegment: StatusLineSegment = {
 		const state = ctx.session.state;
 		const opts = ctx.options.model ?? {};
 
-		let modelName = state.model?.name || state.model?.id || "no-model";
+		let lastUpstreamModel: string | undefined;
+		for (let i = state.messages.length - 1; i >= 0; i--) {
+			const message = state.messages[i];
+			if (message?.role !== "assistant") continue;
+			if (message.model === state.model?.id) lastUpstreamModel = message.upstreamModel;
+			break;
+		}
+
+		let modelName =
+			lastUpstreamModel && lastUpstreamModel !== state.model?.id
+				? `${lastUpstreamModel}*`
+				: state.model?.name || state.model?.id || "no-model";
 		if (modelName.startsWith("Claude ")) {
 			modelName = modelName.slice(7);
 		}

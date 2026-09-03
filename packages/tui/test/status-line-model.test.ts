@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from "bun:test";
 import { ThinkingLevel } from "@oh-my-pi/pi-agent-core";
+import type { AssistantMessage } from "@oh-my-pi/pi-ai/types";
 import type { SegmentContext } from "../src/status-line/segments";
 import { renderSegment } from "../src/status-line/segments";
 import { initTheme, theme } from "../src/theme";
@@ -11,7 +12,7 @@ beforeAll(async () => {
 function createModelContext(advisorActive: boolean): SegmentContext {
 	return {
 		session: {
-			state: { model: { id: "test-model", name: "Test Model" } },
+			state: { model: { id: "test-model", name: "Test Model" }, messages: [] },
 			isFastModeActive: () => false,
 			isAutoThinking: false,
 			autoResolvedThinkingLevel: () => undefined,
@@ -61,6 +62,37 @@ function createModelContext(advisorActive: boolean): SegmentContext {
 		usage: null,
 	};
 }
+
+describe("status line model segment", () => {
+	it("shows the serving model and returns to the configured name on the next unrouted response", () => {
+		const ctx = createModelContext(false);
+		const routed: AssistantMessage = {
+			role: "assistant",
+			content: [],
+			api: "openai-completions",
+			provider: "openrouter",
+			model: "test-model",
+			upstreamModel: "served-model",
+			usage: {
+				input: 0,
+				output: 0,
+				cacheRead: 0,
+				cacheWrite: 0,
+				totalTokens: 0,
+				cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+			},
+			stopReason: "stop",
+			timestamp: 0,
+		};
+		ctx.session.state.messages = [routed];
+		expect(Bun.stripANSI(renderSegment("model", ctx).content)).toContain("served-model*");
+
+		ctx.session.state.messages = [routed, { ...routed, upstreamModel: undefined }];
+		const display = Bun.stripANSI(renderSegment("model", ctx).content);
+		expect(display).toContain("Test Model");
+		expect(display).not.toContain("served-model*");
+	});
+});
 
 describe("status line stream segment", () => {
 	it("renders the live viewer badge only while attached", () => {
@@ -148,6 +180,7 @@ describe("status line model segment compact thinking level", () => {
 				state: {
 					model: { id: "test-model", name: "Test Model", thinking: true },
 					thinkingLevel: ThinkingLevel.High,
+					messages: [],
 				},
 				isFastModeActive: () => false,
 				isAutoThinking: false,
