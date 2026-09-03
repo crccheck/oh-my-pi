@@ -70,4 +70,45 @@ describe("openai-completions upstream provider capture", () => {
 
 		expect(result.upstreamProvider).toBeUndefined();
 	});
+
+	it("records upstreamModel when chunk.model differs from requested model", async () => {
+		const fetchMock: FetchImpl = () =>
+			Promise.resolve(
+				createSseResponse([
+					chunk({ model: "anthropic/claude-sonnet-4.5", choices: [{ index: 0, delta: { content: "Hi" } }] }),
+					chunk({
+						model: "anthropic/claude-sonnet-4.5",
+						choices: [{ index: 0, delta: {}, finish_reason: "stop" }],
+						usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+					}),
+				]),
+			);
+
+		const result = await streamOpenAICompletions(model, baseContext(), {
+			apiKey: "test-key",
+			fetch: fetchMock,
+		}).result();
+
+		expect(result.upstreamModel).toBe("anthropic/claude-sonnet-4.5");
+	});
+
+	it("leaves upstreamModel undefined when chunk.model equals requested model", async () => {
+		const fetchMock: FetchImpl = () =>
+			Promise.resolve(
+				createSseResponse([
+					chunk({ choices: [{ index: 0, delta: { content: "Hi" } }] }),
+					chunk({
+						choices: [{ index: 0, delta: {}, finish_reason: "stop" }],
+						usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+					}),
+				]),
+			);
+
+		const result = await streamOpenAICompletions(model, baseContext(), {
+			apiKey: "test-key",
+			fetch: fetchMock,
+		}).result();
+
+		expect(result.upstreamModel).toBeUndefined();
+	});
 });
