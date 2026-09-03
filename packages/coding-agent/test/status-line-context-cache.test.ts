@@ -82,6 +82,7 @@ function makeSession(opts: {
 				cost: 0,
 			}),
 			getSessionName: () => (opts.sessionName === null ? undefined : (opts.sessionName ?? "test")),
+			getEntries: () => [],
 		},
 		getAsyncJobSnapshot: () => ({ running: [] }),
 		isFastModeActive: () => false,
