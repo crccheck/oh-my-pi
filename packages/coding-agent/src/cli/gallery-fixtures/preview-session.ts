@@ -54,6 +54,7 @@ export function createGallerySession(options: GallerySessionOptions = {}): Agent
 			}),
 			getSessionName: () => "gallery",
 			getSessionId: () => "gallery-session-id",
+			getEntries: () => [],
 		},
 		getAsyncJobSnapshot: () => ({ running: [] }),
 		isFastModeActive: () => options.fastMode ?? false,
