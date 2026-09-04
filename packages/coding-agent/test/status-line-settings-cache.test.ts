@@ -65,6 +65,7 @@ function makeSession(sessionName = "Cache Session") {
 				premiumRequests: 0,
 				cost: 0,
 			}),
+			getEntries: () => [],
 		},
 		getContextUsage: () => undefined,
 	} as unknown as ConstructorParameters<typeof StatusLineComponent>[0];

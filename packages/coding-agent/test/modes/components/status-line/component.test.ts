@@ -61,6 +61,7 @@ function makeSessionWithLastMessage(
 				tokensPerSecond: null,
 			}),
 			getSessionName: () => sessionName,
+			getEntries: () => [],
 		},
 		getPrewalkState: () => (prewalkArmed ? { target: { id: "cheap-model", provider: "openai" } } : undefined),
 		getAsyncJobSnapshot: () => undefined,

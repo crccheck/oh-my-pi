@@ -200,7 +200,19 @@ const modelSegment: StatusLineSegment = {
 		const state = ctx.session.state;
 		const opts = ctx.options.model ?? {};
 
-		let modelName = state.model?.name || state.model?.id || "no-model";
+		let lastUpstreamModel: string | undefined;
+		for (const entry of ctx.session.sessionManager.getEntries()) {
+			if (entry.type === "message" && entry.message.role === "assistant") {
+				if (entry.message.upstreamModel && entry.message.model === state.model?.id) {
+					lastUpstreamModel = entry.message.upstreamModel;
+				}
+			}
+		}
+
+		let modelName =
+			lastUpstreamModel && lastUpstreamModel !== state.model?.id
+				? `${lastUpstreamModel}*`
+				: state.model?.name || state.model?.id || "no-model";
 		if (modelName.startsWith("Claude ")) {
 			modelName = modelName.slice(7);
 		}

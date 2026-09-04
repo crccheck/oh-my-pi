@@ -12,6 +12,7 @@ function createModelContext(advisorActive: boolean): SegmentContext {
 	return {
 		session: {
 			state: { model: { id: "test-model", name: "Test Model" } },
+			sessionManager: { getEntries: () => [], getSessionName: () => undefined },
 			isFastModeActive: () => false,
 			isAutoThinking: false,
 			autoResolvedThinkingLevel: () => undefined,
@@ -133,6 +134,7 @@ describe("status line model segment compact thinking level", () => {
 					model: { id: "test-model", name: "Test Model", thinking: true },
 					thinkingLevel: ThinkingLevel.High,
 				},
+				sessionManager: { getEntries: () => [], getSessionName: () => undefined },
 				isFastModeActive: () => false,
 				isAutoThinking: false,
 				autoResolvedThinkingLevel: () => undefined,
