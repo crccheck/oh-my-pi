@@ -131,6 +131,7 @@ function createStatusLineSession(sessionName: string, modelName?: string) {
 				premiumRequests: 0,
 				cost: 0,
 			}),
+			getEntries: () => [],
 		},
 	} as unknown as ConstructorParameters<typeof StatusLineComponent>[0];
 }

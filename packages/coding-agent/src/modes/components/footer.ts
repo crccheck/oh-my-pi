@@ -164,6 +164,7 @@ export class FooterComponent implements Component {
 		let totalCacheWrite = 0;
 		let totalCost = 0;
 		let totalPremiumRequests = 0;
+		let lastUpstreamModel: string | undefined;
 
 		for (const entry of this.session.sessionManager.getEntries()) {
 			if (entry.type === "message" && entry.message.role === "assistant") {
@@ -173,6 +174,9 @@ export class FooterComponent implements Component {
 				totalCacheWrite += entry.message.usage.cacheWrite;
 				totalCost += entry.message.usage.cost.total;
 				totalPremiumRequests += entry.message.usage.premiumRequests ?? 0;
+				if (entry.message.upstreamModel && entry.message.model === state.model?.id) {
+					lastUpstreamModel = entry.message.upstreamModel;
+				}
 			}
 		}
 
@@ -250,7 +254,9 @@ export class FooterComponent implements Component {
 		let statsLeft = statsParts.join(" ");
 
 		// Add model name on the right side, plus thinking level if model supports it
-		const modelName = state.model?.id || "no-model";
+		const configuredModelName = state.model?.id || "no-model";
+		const modelName =
+			lastUpstreamModel && lastUpstreamModel !== state.model?.id ? `${lastUpstreamModel}*` : configuredModelName;
 
 		// Add thinking level hint when the current model advertises supported efforts
 		let rightSide = modelName;
