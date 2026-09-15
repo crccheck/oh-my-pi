@@ -13,6 +13,9 @@
 ### Fixed
 
 - Improved session and fork-detection polling performance, reducing unnecessary filesystem and database work when monitoring sessions.
+### Fixed
+
+- Attribute routed usage to the provider-reported upstream model in stats.
 
 ## [18.2.1] - 2026-09-15
 
