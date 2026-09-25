@@ -148,6 +148,9 @@
 - ChatGPT accounts that have exhausted a plan's usage window but still have available Codex credit can now continue to be selected for Codex requests.
 - Cursor requests now honor explicit max-mode markers on wire-backed models instead of inferring the mode from the model suffix.
 - OpenAI-compatible chat responses containing only structured tool calls now report time to first token correctly.
+### Added
+
+- Preserve provider-reported routed models as `upstreamModel` when they differ from the requested model.
 
 ## [18.2.1] - 2026-09-15
 
